@@ -7,3 +7,15 @@ services:
     - ./config/:/etc/prometheus/
     ports:
      - '9090:9090'
+  grafana:
+    image: grafana/grafana:5.2.4
+    container_name: 'grafana'
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./grafana/config/grafana.ini:/etc/grafana/grafana.ini  #grafana报警邮件配置
+      - ./grafana/provisioning/:/etc/grafana/provisioning/  #配置grafana的prometheus数据源
+    env_file:
+      - ./grafana/config.monitoring  #grafana登录配置
+    depends_on:
+      - prometheus  #grafana需要在prometheus之后启动
