@@ -9,8 +9,9 @@ scrape_configs:
           application: prometheus
 
   - job_name: openapi
+    scrape_interval: 1s
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['10.180.134.117:8082']
+      - targets: ['192.168.3.9:8082']
         labels:
           application: localhost
