@@ -48,13 +48,21 @@ services:
   redis:
     image: redis
     container_name: redis
+    command: redis-server /etc/redis/redis.conf --appendonly yes
+    volumes:
+      - /usr/local/var/redis/data:/data
+      - ./redis/redis.conf:/etc/redis/redis.conf
+      - ./config/localtime:/etc/localtime:ro
     ports:
       - 6379:6379
   redis_exporter:
     image: oliver006/redis_exporter:v1.6.1-arm
     container_name: redis_exporter
+    volumes:
+      - ./config/localtime:/etc/localtime:ro
     environment:
-      - "REDIS_ADDR=redis://redis:6379" #设置访问elasticsearch的地址
+      - "REDIS_ADDR=redis://192.168.3.9:6379"
+      - "REDIS_PASSWORD=886887"
     ports:
       - 9121:9121
     depends_on:
@@ -76,6 +84,8 @@ services:
   mysql_exporter:
     image: prom/mysqld-exporter
     container_name: mysql_exporer
+    volumes:
+      - ./config/localtime:/etc/localtime:ro
     ports:
       - 9104:9104
     environment:
