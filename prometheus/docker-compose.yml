@@ -89,6 +89,6 @@ services:
     ports:
       - 9104:9104
     environment:
-      - "DATA_SOURCE_NAME=root:886887@(mysql:3306)/final"
+      - "DATA_SOURCE_NAME=root:886887@(192.168.3.9:3306)/final"
     depends_on:
       - mysql
