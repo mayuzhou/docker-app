@@ -16,14 +16,18 @@ scrape_configs:
         labels:
           application: localhost
   - job_name: 'mysql'
+    metrics_path: '/metrics'
     scrape_interval: 5s
     static_configs:
-      - targets: ['127.0.0.1:9104']
+      - targets: ['192.168.3.9:9104']
         labels:
           instance: mysql
+          application: mysql
   - job_name: 'redis'
+    metrics_path: '/metrics'
     scrape_interval: 5s
     static_configs:
-      - targets: ['127.0.0.1:9121']
+      - targets: ['192.168.3.9:9121']
         labels:
           instance: redis
+          application: redis
