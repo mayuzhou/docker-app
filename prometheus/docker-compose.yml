@@ -5,6 +5,7 @@ services:
     container_name: 'prometheus'
     volumes:
     - ./config/:/etc/prometheus/
+    - ./config/localtime:/etc/localtime:ro
     ports:
      - '9090:9090'
   grafana:
@@ -15,6 +16,7 @@ services:
     volumes:
       - ./grafana/config/grafana.ini:/etc/grafana/grafana.ini  #grafana报警邮件配置
       - ./grafana/provisioning/:/etc/grafana/provisioning/  #配置grafana的prometheus数据源
+      - ./config/localtime:/etc/localtime:ro
     env_file:
       - ./grafana/config.monitoring  #grafana登录配置
     depends_on:
@@ -43,6 +45,16 @@ services:
       - "elasticsearch.hosts=http://es:9200" #设置访问elasticsearch的地址
     ports:
       - 5601:5601
+  redis:
+    image: redis
+    container_name: redis
+    command: redis-server /etc/redis/redis.conf --appendonly yes
+    volumes:
+      - /usr/local/var/redis/data:/data
+      - ./redis/redis.conf:/etc/redis/redis.conf
+      - ./config/localtime:/etc/localtime:ro
+    ports:
+      - 6379:6379
 
   filebeat:
     image: docker.elastic.co/beats/filebeat:6.5.4
@@ -55,17 +67,39 @@ services:
     depends_on:
       - elasticsearch #kibana在elasticsearch启动之后再启动
   redis_exporter:
-    image: oliver006/redis_exporter
+    image: oliver006/redis_exporter:v1.6.1-arm
     container_name: redis_exporter
+    volumes:
+      - ./config/localtime:/etc/localtime:ro
     environment:
-      - "REDIS_ADDR=redis://127.0.0.1:6379"
-      - "REDIS_PASSWORD="
+      - "REDIS_ADDR=redis://192.168.3.9:6379"
+      - "REDIS_PASSWORD=886887"
     ports:
       - 9121:9121
-  mysqld_exporter:
-    image: prom/mysqld-exporter
-    container_name: mysqld-exporter
+    depends_on:
+      - redis
+  mysql:
+    image: mysql/mysql-server:5.7
+    container_name: mysql
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password
+    restart: always
     environment:
-      - "DATA_SOURCE_NAME=root:886887@(10.180.134.117:3306)/final"
+      - "TZ=Asia/Shanghai" # 设置容器时区与宿主机保持一致
+      - "MYSQL_ROOT_PASSWORD=886887"
+    volumes:
+      - ./config/localtime:/etc/localtime:ro # 设置容器时区与宿主机保持一致
+      - /usr/local/var/mysql:/var/lib/mysql # 映射数据库保存目录到宿主机，防止数据丢失
+      - ./mysql:/etc/mysql # 映射数据库配置文件
+    ports:
+      - 3306:3306
+  mysql_exporter:
+    image: prom/mysqld-exporter
+    container_name: mysql_exporer
+    volumes:
+      - ./config/localtime:/etc/localtime:ro
     ports:
       - 9104:9104
+    environment:
+      - "DATA_SOURCE_NAME=root:886887@(192.168.3.9:3306)/final"
+    depends_on:
+      - mysql
