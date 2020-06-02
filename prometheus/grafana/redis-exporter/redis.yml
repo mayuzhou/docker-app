@@ -1,5 +1,0 @@
-redis_hosts:
-  - host: 127.0.0.1     # redis host
-    port: 6379          # redis port
-    password: ""   # redis password,没有密码传入空string
-    description: "test1" # description
