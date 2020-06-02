@@ -27,8 +27,8 @@ services:
       - "discovery.type=single-node" #以单一节点模式启动
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m" #设置使用jvm内存大小，稍微配置大点，不然有可能启动不成功
     volumes:
-      - /mydata/elasticsearch/plugins:/usr/share/elasticsearch/plugins #插件文件挂载
-      - /mydata/elasticsearch/data:/usr/share/elasticsearch/data #数据文件挂载
+      - /usr/local/var/elasticsearch/plugins:/usr/share/elasticsearch/plugins #插件文件挂载
+      - /usr/local/var/elasticsearch/data:/usr/share/elasticsearch/data #数据文件挂载
     ports:
       - 9200:9200
       - 9300:9300
@@ -43,10 +43,29 @@ services:
       - "elasticsearch.hosts=http://es:9200" #设置访问elasticsearch的地址
     ports:
       - 5601:5601
+
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:6.5.4
+    container_name: filebeat
+    privileged: true
+    volumes:
+      - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - /usr/local/var/log/redis.log:/usr/local/var/log/redis.log
+#      - /data/web/app/runtime/logs/buyer:/data/web/app/runtime/logs/buyer
+    depends_on:
+      - elasticsearch #kibana在elasticsearch启动之后再启动
   redis_exporter:
     image: oliver006/redis_exporter
     container_name: redis_exporter
     environment:
-      - "redis.addr=redis://127.0.0.1:6379" #设置访问elasticsearch的地址
+      - "REDIS_ADDR=redis://127.0.0.1:6379"
+      - "REDIS_PASSWORD="
     ports:
       - 9121:9121
+  mysqld_exporter:
+    image: prom/mysqld-exporter
+    container_name: mysqld-exporter
+    environment:
+      - "DATA_SOURCE_NAME=root:886887@(10.180.134.117:3306)/final"
+    ports:
+      - 9104:9104
