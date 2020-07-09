@@ -29,8 +29,8 @@ services:
       - "discovery.type=single-node" #以单一节点模式启动
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m" #设置使用jvm内存大小，稍微配置大点，不然有可能启动不成功
     volumes:
-      - /usr/local/var/elasticsearch/plugins:/usr/share/elasticsearch/plugins #插件文件挂载
-      - /usr/local/var/elasticsearch/data:/usr/share/elasticsearch/data #数据文件挂载
+      - /usr/local/var/log/elasticsearch/plugins:/usr/share/elasticsearch/plugins #插件文件挂载
+      - /usr/local/var/log/elasticsearch/data:/usr/share/elasticsearch/data #数据文件挂载
     ports:
       - 9200:9200
       - 9300:9300
@@ -55,17 +55,6 @@ services:
       - ./config/localtime:/etc/localtime:ro
     ports:
       - 6379:6379
-
-  filebeat:
-    image: docker.elastic.co/beats/filebeat:6.5.4
-    container_name: filebeat
-    privileged: true
-    volumes:
-      - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
-      - /usr/local/var/log/redis.log:/usr/local/var/log/redis.log
-#      - /data/web/app/runtime/logs/buyer:/data/web/app/runtime/logs/buyer
-    depends_on:
-      - elasticsearch #kibana在elasticsearch启动之后再启动
   redis_exporter:
     image: oliver006/redis_exporter:v1.6.1-arm
     container_name: redis_exporter
@@ -103,19 +92,3 @@ services:
       - "DATA_SOURCE_NAME=root:886887@(192.168.3.9:3306)/final"
     depends_on:
       - mysql
-  gitlab:
-    image: 'gitlab/gitlab-ce:latest'
-    restart: always
-    hostname: 'gitlab'
-    environment:
-      GITLAB_OMNIBUS_CONFIG: |
-        external_url 'http://gitlab.example.com:8929' # http协议所使用的访问地址,不加端口默认80
-        gitlab_rails['gitlab_shell_ssh_port'] = 2224 # 此端口是run时22端口映射的2224端口       账号root
-    ports:
-      - '8929:8929'
-      - '2224:22'
-    volumes:
-      - '/usr/local/etc/gitlab:/etc/gitlab'
-      - '/usr/local/var/log/gitlab:/var/log/gitlab'
-      - '/usr/local/opt/gitlab:/var/opt/gitlab'
-
