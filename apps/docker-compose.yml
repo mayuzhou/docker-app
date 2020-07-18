@@ -92,3 +92,16 @@ services:
       - "DATA_SOURCE_NAME=root:886887@(192.168.3.9:3306)/final"
     depends_on:
       - mysql
+  jenkins:
+    container_name: webjenkins
+    image: 'jenkins/jenkins:lts'
+    restart: always
+    environment:
+      - TZ=Asia/Shanghai
+    ports:
+      - '3083:8080'
+      - '50001:50000'
+    volumes:
+      - ./jenkins-data:/var/jenkins_home:z
+      - ./jenkins-data/docker.sock:/var/run/docker.sock
+    network_mode: "bridge"
