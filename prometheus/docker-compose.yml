@@ -103,3 +103,19 @@ services:
       - "DATA_SOURCE_NAME=root:886887@(192.168.3.9:3306)/final"
     depends_on:
       - mysql
+  gitlab:
+    image: 'gitlab/gitlab-ce:latest'
+    restart: always
+    hostname: 'gitlab'
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://gitlab.example.com:8929' # http协议所使用的访问地址,不加端口默认80
+        gitlab_rails['gitlab_shell_ssh_port'] = 2224 # 此端口是run时22端口映射的2224端口       账号root
+    ports:
+      - '8929:8929'
+      - '2224:22'
+    volumes:
+      - '/usr/local/etc/gitlab:/etc/gitlab'
+      - '/usr/local/var/log/gitlab:/var/log/gitlab'
+      - '/usr/local/opt/gitlab:/var/opt/gitlab'
+
