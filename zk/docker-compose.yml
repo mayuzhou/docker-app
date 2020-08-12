@@ -2,7 +2,7 @@ version: '3.7'
 services:
     zoo1:
         image: zookeeper
-        restart: always
+#        restart: always
         container_name: zoo1
         hostname: zoo1
         ports:
@@ -16,7 +16,7 @@ services:
 
     zoo2:
         image: zookeeper
-        restart: always
+#        restart: always
         container_name: zoo2
         hostname: zoo2
         ports:
@@ -30,7 +30,7 @@ services:
 
     zoo3:
         image: zookeeper
-        restart: always
+#        restart: always
         container_name: zoo3
         hostname: zoo3
         ports:
