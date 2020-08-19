@@ -11,7 +11,7 @@ services:
     volumes:
 #      - ./config/localtime:/etc/localtime:ro # 设置容器时区与宿主机保持一致
       - ./data/mysql/lib/master:/var/lib/mysql # 映射数据库保存目录到宿主机，防止数据丢失
-      - ./data/mysql/master:/etc/mysql # 映射数据库配置文件
+      - ./mysql/master:/etc/mysql # 映射数据库配置文件
     ports:
       - 3307:3306
   mysql-slave:
@@ -25,6 +25,6 @@ services:
     volumes:
 #      - ./config/localtime:/etc/localtime:ro # 设置容器时区与宿主机保持一致
       - ./data/mysql/lib/slave1:/var/lib/mysql # 映射数据库保存目录到宿主机，防止数据丢失
-      - ./data/mysql/slave:/etc/mysql # 映射数据库配置文件
+      - ./mysql/slave:/etc/mysql # 映射数据库配置文件
     ports:
       - 3308:3306
