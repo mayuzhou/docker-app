@@ -95,6 +95,7 @@ services:
   jenkins:
     container_name: webjenkins
     image: 'jenkins/jenkins:lts'
+    user: root
     restart: always
     environment:
       - TZ=Asia/Shanghai
@@ -152,3 +153,33 @@ services:
     - ./config/localtime:/etc/localtime
     ports:
       - "9001:9000"
+  ngrok:
+    image: shkoliar/ngrok:latest
+    ports:
+      - 4551:4551
+    environment:
+      - DOMAIN=192.168.0.109
+      - PORT=8999
+      - PROTOCOL=http
+  nginx:
+    restart: always
+    image: nginx:1.11.6-alpine
+    ports:
+      - 8080:80
+      - 80:80
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/.htpasswd:/etc/nginx/.htpasswd
+      - /usr/local/var/nginx/log:/var/log/nginx
+      - ./www:/var/www
+      - /etc/letsencrypt:/etc/letsencrypt
+  live:
+    image: live
+    build: ./live
+    container_name: live
+    ports:
+      - 8887:8887
+      - 8886:8886
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./live/log:/usr/local/var/log
