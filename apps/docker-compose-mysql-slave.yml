@@ -39,15 +39,11 @@ services:
     container_name: mysql-slave-1
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password
     restart: always
-    environment:
-      - "TZ=Asia/Shanghai" # 设置容器时区与宿主机保持一致
-      - "MYSQL_ROOT_PASSWORD=886887"
-      - MYSQL_ROOT_HOST=%
-      - MYSQL_DATABASE=test
-      - MYSQL_LOG_CONSOLE=true
+    env_file:
+      - ./mysql/mysql.env
     volumes:
       #      - ./config/localtime:/etc/localtime:ro # 设置容器时区与宿主机保持一致
-      - ./data/mysql/lib/slave1:/var/lib/mysql # 映射数据库保存目录到宿主机，防止数据丢失
+      - ./data/mysql/lib/slave-1:/var/lib/mysql # 映射数据库保存目录到宿主机，防止数据丢失
       - ./mysql/slave/my-slave-1.cnf:/etc/mysql/my.cnf # 映射数据库配置文件
     ports:
       - 3309:3306
