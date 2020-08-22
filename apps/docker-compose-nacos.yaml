@@ -1,0 +1,42 @@
+version: "3"
+services:
+  nacos:
+    image: nacos/nacos-server:1.3.1
+    container_name: nacos-standalone-mysql
+    env_file:
+      - ./nacos/nacos-standlone-mysql.env
+    volumes:
+      - ./data/nacos/standalone-logs/:/home/nacos/logs
+      - ./nacos/custom.properties:/home/nacos/init.d/custom.properties
+    ports:
+      - "8848:8848"
+      - "9555:9555"
+    links:
+      - mysql
+#    restart: always
+  mysql:
+    container_name: mysql
+    image: nacos/nacos-mysql:8.0.16
+    env_file:
+      - ./mysql/mysql.env
+    volumes:
+      - .data/mysql/nacos-mysql:/var/lib/mysql
+    ports:
+      - "3306:3306"
+  seata-server:
+    image: seataio/seata-server
+    hostname: seata-server
+    ports:
+      - "8091:8091"
+    volumes:
+      - ./seata/registry.conf:/etc/registry.conf
+    environment:
+      - SEATA_CONFIG_NAME=file:/etc/registry
+      - SEATA_PORT=8091
+      - STORE_MODE=file
+  sentinel:
+    image: bladex/sentinel-dashboard:latest
+    container_name: sentinel
+    ports:
+      - "8858:8858"
+
