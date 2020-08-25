@@ -23,27 +23,15 @@ scrape_configs:
         labels:
           instance: mysql
           application: mysql_exporter_master
-  - job_name: 'mysql'
-      metrics_path: '/metrics'
-      scrape_interval: 5s
-      static_configs:
-        - targets: ['mysql_exporter_slave:9105']
+      - targets: [ 'mysql_exporter_slave:9105' ]
           labels:
             instance: mysql
             application: mysql_exporter_slave
-  - job_name: 'mysql'
-      metrics_path: '/metrics'
-      scrape_interval: 5s
-      static_configs:
-        - targets: ['mysql_exporter_master-1:9106']
+      - targets: [ 'mysql_exporter_master-1:9106' ]
           labels:
             instance: mysql
             application: mysql_exporter_master-1
-  - job_name: 'mysql'
-      metrics_path: '/metrics'
-      scrape_interval: 5s
-      static_configs:
-        - targets: ['mysql_exporter_slave-1:9107']
+      - targets: [ 'mysql_exporter_slave-1:9107' ]
           labels:
             instance: mysql
             application: mysql_exporter_slave-1
