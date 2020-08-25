@@ -8,6 +8,11 @@ services:
     - ./config/localtime:/etc/localtime:ro
     ports:
      - '9090:9090'
+    external_links:
+      - mysql_exporter_master
+      - mysql_exporter_slave
+      - mysql_exporter_master-1
+      - mysql_exporter_slave-1
   grafana:
     image: grafana/grafana:5.2.4
     container_name: 'grafana'

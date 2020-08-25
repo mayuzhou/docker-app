@@ -34,6 +34,23 @@ services:
       - ./mysql/slave:/etc/mysql # 映射数据库配置文件
     ports:
       - 3308:3306
+  mysql-master-1:
+    image: mysql/mysql-server:8.0
+    container_name: mysql-maser-1
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password
+    #    restart: always
+    environment:
+      - "TZ=Asia/Shanghai" # 设置容器时区与宿主机保持一致
+      - "MYSQL_ROOT_PASSWORD=886887"
+      - MYSQL_ROOT_HOST=%
+      - MYSQL_DATABASE=test
+      - MYSQL_LOG_CONSOLE=true
+    volumes:
+      #      - ./config/localtime:/etc/localtime:ro # 设置容器时区与宿主机保持一致
+      - ./data/mysql/lib/master-1:/var/lib/mysql # 映射数据库保存目录到宿主机，防止数据丢失
+      - ./mysql/master:/etc/mysql # 映射数据库配置文件
+    ports:
+      - 3309:3306
   mysql-slave-1:
     image: mysql/mysql-server:8.0
     container_name: mysql-slave-1
@@ -46,4 +63,48 @@ services:
       - ./data/mysql/lib/slave-1:/var/lib/mysql # 映射数据库保存目录到宿主机，防止数据丢失
       - ./mysql/slave/my-slave-1.cnf:/etc/mysql/my.cnf # 映射数据库配置文件
     ports:
-      - 3309:3306
+      - 3310:3306
+  mysql_exporter_master:
+    image: prom/mysqld-exporter
+    container_name: mysql_exporter_master
+    volumes:
+      - ./config/localtime:/etc/localtime:ro
+    ports:
+      - 9104:9104
+    environment:
+      - "DATA_SOURCE_NAME=root:886887@(mysql-master:3307)/test"
+    depends_on:
+      - mysql-master
+  mysql_exporter_slave:
+    image: prom/mysqld-exporter
+    container_name: mysql_exporter_slave
+    volumes:
+      - ./config/localtime:/etc/localtime:ro
+    ports:
+      - 9105:9104
+    environment:
+      - "DATA_SOURCE_NAME=root:886887@(mysql-slave:3308)/test"
+    depends_on:
+      - mysql-slave
+  mysql_exporter_master-1:
+    image: prom/mysqld-exporter
+    container_name: mysql_exporter_master
+    volumes:
+      - ./config/localtime:/etc/localtime:ro
+    ports:
+      - 9106:9104
+    environment:
+      - "DATA_SOURCE_NAME=root:886887@(mysql-master-1:3309)/test"
+    depends_on:
+      - mysql-master-1
+  mysql_exporter_slave-1:
+    image: prom/mysqld-exporter
+    container_name: mysql_exporter_slave
+    volumes:
+      - ./config/localtime:/etc/localtime:ro
+    ports:
+      - 9107:9104
+    environment:
+      - "DATA_SOURCE_NAME=root:886887@(mysql-slave-1:3310)/test"
+    depends_on:
+      - mysql-slave-1
