@@ -88,7 +88,7 @@ services:
       - mysql-slave
   mysql_exporter_master-1:
     image: prom/mysqld-exporter
-    container_name: mysql_exporter_master
+    container_name: mysql_exporter_master-1
     volumes:
       - ./config/localtime:/etc/localtime:ro
     ports:
@@ -99,7 +99,7 @@ services:
       - mysql-master-1
   mysql_exporter_slave-1:
     image: prom/mysqld-exporter
-    container_name: mysql_exporter_slave
+    container_name: mysql_exporter_slave-1
     volumes:
       - ./config/localtime:/etc/localtime:ro
     ports:
