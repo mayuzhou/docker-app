@@ -14,6 +14,8 @@ output.elasticsearch:
   index: "log-%{+yyyy.MM}"
 setup.template.name: "filebeat"
 setup.template.pattern: "filebeat-*"
+# filebeat 配置关闭 ILM 即可解决Index Pattern不生效的问题
+setup.ilm.enabled: false
 filebeat.config.modules:
   # Glob pattern for configuration loading
   path: ${path.config}/modules.d/*.yml
