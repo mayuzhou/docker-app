@@ -10,7 +10,7 @@ services:
       - "MYSQL_ROOT_PASSWORD=886887"
       - MYSQL_ROOT_HOST=%
       - MYSQL_DATABASE=test
-      - MYSQL_LOG_CONSOLE=true
+#      - MYSQL_LOG_CONSOLE=true
     volumes:
 #      - ./config/localtime:/etc/localtime:ro # 设置容器时区与宿主机保持一致
       - ./data/mysql/lib/master:/var/lib/mysql # 映射数据库保存目录到宿主机，防止数据丢失
